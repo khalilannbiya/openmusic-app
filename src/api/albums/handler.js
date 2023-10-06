@@ -1,14 +1,16 @@
 import autoBind from "auto-bind";
 
 class AlbumsHandler {
-  constructor(service) {
+  constructor(service, validator) {
     this._service = service;
+    this._validator = validator;
 
     autoBind(this);
   }
 
   postAlbumHandler(request, h) {
     try {
+      this._validator.validateAlbumPayload(request.payload);
       const albumId = this._service.addAlbum(request.payload);
 
       const response = h.response({
@@ -53,6 +55,8 @@ class AlbumsHandler {
 
   putAlbumByIdHandler(request, h) {
     try {
+      this._validator.validateAlbumPayload(request.payload);
+
       const { id } = request.params;
       const { name, year } = request.payload;
 

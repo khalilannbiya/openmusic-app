@@ -3,6 +3,8 @@ import albums from "./api/albums/index.js";
 import songs from "./api/songs/index.js";
 import AlbumsService from "./services/inMemory/AlbumsService.js";
 import SongsService from "./services/inMemory/SongsService.js";
+import AlbumsValidator from "./validator/albums/index.js";
+import SongsValidator from "./validator/songs/index.js";
 
 const init = async () => {
   const albumsService = new AlbumsService();
@@ -23,12 +25,14 @@ const init = async () => {
       plugin: albums,
       options: {
         service: albumsService,
+        validator: AlbumsValidator,
       },
     },
     {
       plugin: songs,
       options: {
         service: songsService,
+        validator: SongsValidator,
       },
     },
   ]);
