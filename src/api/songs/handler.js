@@ -1,23 +1,21 @@
 import autoBind from "auto-bind";
 
-class AlbumsHandler {
+class SongsHandler {
   constructor(service) {
     this._service = service;
 
     autoBind(this);
   }
 
-  postAlbumHandler(request, h) {
+  postSongHandler(request, h) {
     try {
-      const albumId = this._service.addAlbum(request.payload);
-
+      const songId = this._service.addSong(request.payload);
       const response = h.response({
         status: "success",
         data: {
-          albumId,
+          songId,
         },
       });
-
       response.code(201);
       return response;
     } catch (error) {
@@ -30,15 +28,31 @@ class AlbumsHandler {
     }
   }
 
-  getAlbumByIdHandler(request, h) {
+  getSongsHandler() {
+    const songs = this._service.getSongs();
+
+    return {
+      status: "success",
+      data: {
+        songs: songs.map((song) => ({
+          id: song.id,
+          title: song.title,
+          performer: song.performer,
+        })),
+      },
+    };
+  }
+
+  getSongByIdHandler(request, h) {
     try {
       const { id } = request.params;
-      const album = this._service.getAlbumById(id);
+
+      const song = this._service.getSongById(id);
 
       return {
         status: "success",
         data: {
-          album,
+          song,
         },
       };
     } catch (error) {
@@ -51,16 +65,15 @@ class AlbumsHandler {
     }
   }
 
-  putAlbumByIdHandler(request, h) {
+  putSongByIdHandler(request, h) {
     try {
       const { id } = request.params;
-      const { name, year } = request.payload;
 
-      this._service.editAlbumById(id, { name, year });
+      this._service.editSongById(id, request.payload);
 
       return {
         status: "success",
-        message: "Album berhasil diperbarui!",
+        message: "Song berhasil diperbarui!",
       };
     } catch (error) {
       const response = h.response({
@@ -72,13 +85,15 @@ class AlbumsHandler {
     }
   }
 
-  deleteAlbumByIdHandler(request, h) {
+  deleteSongByIdHandler(request, h) {
     try {
       const { id } = request.params;
-      this._service.deleteAlbumById(id);
+
+      this._service.deleteSongById(id);
+
       return {
         status: "success",
-        message: "Album berhasil dihapus!",
+        message: "Song berhasil dihapus!",
       };
     } catch (error) {
       const response = h.response({
@@ -91,4 +106,4 @@ class AlbumsHandler {
   }
 }
 
-export default AlbumsHandler;
+export default SongsHandler;
