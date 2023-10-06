@@ -10,6 +10,9 @@ dependencies:
     version: 21.3.2
 
 devDependencies:
+  auto-bind:
+    specifier: '4'
+    version: 4.0.0
   nanoid:
     specifier: ^5.0.1
     version: 5.0.1
@@ -254,6 +257,11 @@ packages:
     dependencies:
       normalize-path: 3.0.0
       picomatch: 2.3.1
+    dev: true
+
+  /auto-bind@4.0.0:
+    resolution: {integrity: sha512-Hdw8qdNiqdJ8LqT0iK0sVzkFbzg6fhnQqqfWhBDxcHZvU75+B+ayzTy8x+k5Ix0Y92XOhOUlx74ps+bA6BeYMQ==}
+    engines: {node: '>=8'}
     dev: true
 
   /balanced-match@1.0.2:
