@@ -1,6 +1,6 @@
 import ClientError from "./ClientError.js";
 
-class NotFoundeError extends ClientError {
+class NotFoundError extends ClientError {
   constructor(message) {
     super(message, 404);
 
@@ -8,4 +8,4 @@ class NotFoundeError extends ClientError {
   }
 }
 
-export default NotFoundeError;
+export default NotFoundError;
