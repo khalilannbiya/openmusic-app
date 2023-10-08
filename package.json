@@ -20,6 +20,7 @@
   "dependencies": {
     "@hapi/hapi": "^21.3.2",
     "joi": "^17.11.0",
+    "node-pg-migrate": "^6.2.2",
     "pg": "^8.11.3"
   }
 }
