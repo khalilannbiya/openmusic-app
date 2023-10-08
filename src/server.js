@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import Hapi from "@hapi/hapi";
 import albums from "./api/albums/index.js";
 import songs from "./api/songs/index.js";
@@ -11,8 +14,8 @@ const init = async () => {
   const songsService = new SongsService();
 
   const server = Hapi.server({
-    port: 5000,
-    host: "localhost",
+    port: process.env.PORT,
+    host: process.env.HOST,
     routes: {
       cors: {
         origin: ["*"],
