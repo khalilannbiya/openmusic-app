@@ -1,4 +1,6 @@
 const { Pool } = require("pg");
+const InvariantError = require("../../exceptions/InvariantError.js");
+const NotFoundError = require("../../exceptions/NotFoundError.js");
 
 class AlbumService {
   constructor() {
@@ -18,5 +20,18 @@ class AlbumService {
     if (!result.rows[0].id) throw new InvariantError("Album gagal ditambahkan!");
 
     return result.rows[0].id;
+  }
+
+  async getAlbumById(id) {
+    const query = {
+      text: "SELECT * FROM albums WHERE id = $1",
+      values: [id],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rows.length) throw new NotFoundError("Album tidak ditemukan!");
+
+    return result.rows[0];
   }
 }
