@@ -7,4 +7,5 @@ class ClientError extends Error {
   }
 }
 
-export default ClientError;
+// export default ClientError;
+module.exports = ClientError;

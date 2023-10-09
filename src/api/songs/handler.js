@@ -1,4 +1,6 @@
-import autoBind from "auto-bind";
+// import autoBind from "auto-bind";
+const autoBind = require("auto-bind");
+const ClientError = require("../../exceptions/ClientError");
 
 class SongsHandler {
   constructor(service, validator) {
@@ -154,4 +156,5 @@ class SongsHandler {
   }
 }
 
-export default SongsHandler;
+// export default SongsHandler;
+module.exports = SongsHandler;
