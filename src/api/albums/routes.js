@@ -21,5 +21,4 @@ const routes = (handler) => [
   },
 ];
 
-// export default routes;
-module.exports = routes;
+export default routes;

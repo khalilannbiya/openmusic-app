@@ -1,9 +1,6 @@
-// import Joi from "joi";
-const Joi = require("joi");
+import Joi from "joi";
 
-const AlbumPayloadSchema = Joi.object({
+export const AlbumPayloadSchema = Joi.object({
   name: Joi.string().required(),
   year: Joi.number().required(),
 });
-
-module.exports = { AlbumPayloadSchema };

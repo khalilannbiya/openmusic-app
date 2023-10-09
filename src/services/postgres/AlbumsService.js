@@ -1,8 +1,11 @@
-const { Pool } = require("pg");
-const InvariantError = require("../../exceptions/InvariantError.js");
-const NotFoundError = require("../../exceptions/NotFoundError.js");
+import pkg from "pg";
+const { Pool } = pkg;
 
-class AlbumService {
+import InvariantError from "../../exceptions/InvariantError.js";
+import NotFoundError from "../../exceptions/NotFoundError.js";
+import { nanoid } from "nanoid";
+
+class AlbumsService {
   constructor() {
     this._pool = new Pool();
   }
@@ -37,8 +40,8 @@ class AlbumService {
 
   async editAlbumById(id, { name, year }) {
     const query = {
-      text: "UPDATE albums SET name = $2, year = $3 WHERE id = $1 RETURNING id",
-      value: [id, name, year],
+      text: "UPDATE albums SET name = $1, year = $2 WHERE id = $3 RETURNING id",
+      values: [name, year, id],
     };
 
     const result = await this._pool.query(query);
@@ -49,7 +52,7 @@ class AlbumService {
   async deleteAlbumById(id) {
     const query = {
       text: "DELETE FROM albums WHERE id = $1 RETURNING id",
-      value: [id],
+      values: [id],
     };
 
     const result = await this._pool.query(query);
@@ -58,4 +61,4 @@ class AlbumService {
   }
 }
 
-module.exports = AlbumService;
+export default AlbumsService;

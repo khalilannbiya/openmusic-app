@@ -1,9 +1,6 @@
-// import { nanoid } from "nanoid";
-// import InvariantError from "../../exceptions/InvariantError.js";
-// import NotFoundError from "../../exceptions/NotFoundError.js";
-const { nanoid } = require("nanoid");
-const InvariantError = require("../../exceptions/InvariantError.js");
-const NotFoundError = require("../../exceptions/NotFoundError.js");
+import { nanoid } from "nanoid";
+import InvariantError from "../../exceptions/InvariantError.js";
+import NotFoundError from "../../exceptions/NotFoundError.js";
 
 class AlbumsService {
   constructor() {
@@ -56,5 +53,4 @@ class AlbumsService {
   }
 }
 
-// export default AlbumsService;
-module.exports = AlbumsService;
+export default AlbumsService;
