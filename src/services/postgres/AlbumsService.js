@@ -4,6 +4,7 @@ const { Pool } = pkg;
 import InvariantError from "../../exceptions/InvariantError.js";
 import NotFoundError from "../../exceptions/NotFoundError.js";
 import { nanoid } from "nanoid";
+import { simpleResponseSong } from "../../utils/index.js";
 
 class AlbumsService {
   constructor() {
@@ -26,16 +27,24 @@ class AlbumsService {
   }
 
   async getAlbumById(id) {
-    const query = {
+    const queryJoin = {
+      text: "SELECT * FROM albums JOIN songs ON albums.id = songs.album_id WHERE albums.id = $1",
+      values: [id],
+    };
+
+    const queryAlbum = {
       text: "SELECT * FROM albums WHERE id = $1",
       values: [id],
     };
 
-    const result = await this._pool.query(query);
+    const [resultJoin, resultAlbum] = await Promise.all([this._pool.query(queryJoin), this._pool.query(queryAlbum)]);
 
-    if (!result.rows.length) throw new NotFoundError("Album tidak ditemukan!");
+    if (!resultAlbum.rows.length) throw new NotFoundError("Album tidak ditemukan!");
 
-    return result.rows[0];
+    return {
+      ...resultAlbum.rows[0],
+      songs: resultJoin.rows.map(simpleResponseSong),
+    };
   }
 
   async editAlbumById(id, { name, year }) {
