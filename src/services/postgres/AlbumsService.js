@@ -1,10 +1,10 @@
 import pkg from "pg";
-const { Pool } = pkg;
-
+import { nanoid } from "nanoid";
 import InvariantError from "../../exceptions/InvariantError.js";
 import NotFoundError from "../../exceptions/NotFoundError.js";
-import { nanoid } from "nanoid";
 import { simpleResponseSong } from "../../utils/index.js";
+
+const { Pool } = pkg;
 
 class AlbumsService {
   constructor() {

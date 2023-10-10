@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-dotenv.config();
 
 import Hapi from "@hapi/hapi";
 
@@ -9,6 +8,8 @@ import AlbumsService from "./services/postgres/AlbumsService.js";
 import SongsService from "./services/postgres/SongsService.js";
 import AlbumsValidator from "./validator/albums/index.js";
 import SongsValidator from "./validator/songs/index.js";
+
+dotenv.config();
 
 const init = async () => {
   const albumsService = new AlbumsService();

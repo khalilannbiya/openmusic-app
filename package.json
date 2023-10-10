@@ -7,17 +7,21 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./src/server.js",
-    "migrate": "node-pg-migrate"
+    "migrate": "node-pg-migrate",
+    "lint": "eslint ./src"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "auto-bind": "4",
     "dotenv": "^16.3.1",
+    "eslint": "^8.51.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.28.1",
     "nodemon": "^3.0.1"
   },
   "dependencies": {
+    "auto-bind": "4",
     "@hapi/hapi": "^21.3.2",
     "joi": "^17.11.0",
     "nanoid": "^5.0.1",
