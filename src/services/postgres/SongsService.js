@@ -45,7 +45,6 @@ class SongsService {
       values.push(`%${performer}%`);
     }
 
-    console.log(query);
     const result = await this._pool.query(query, values);
 
     return result.rows;
