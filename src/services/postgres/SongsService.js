@@ -26,8 +26,28 @@ class SongsService {
     return result.rows[0].id;
   }
 
-  async getSongs() {
-    return (await this._pool.query("SELECT * FROM songs")).rows;
+  async getSongs({ title, performer }) {
+    // Membuat query SQL untuk pencarian Full Text
+    let query = "SELECT * FROM songs WHERE 1=1";
+
+    const values = [];
+
+    if (title) {
+      query += " AND to_tsvector('english', title || ' ' || performer) @@ to_tsquery('english', $1)";
+      values.push(title);
+    }
+
+    if (performer && title) {
+      query += " AND to_tsvector('english', title || ' ' || performer) @@ to_tsquery('english', $2)";
+      values.push(performer);
+    } else if (performer && !title) {
+      query += " AND to_tsvector('english', title || ' ' || performer) @@ to_tsquery('english', $1)";
+      values.push(performer);
+    }
+
+    const result = await this._pool.query(query, values);
+
+    return result.rows;
   }
 
   async getSongById(id) {
