@@ -33,18 +33,19 @@ class SongsService {
     const values = [];
 
     if (title) {
-      query += " AND to_tsvector('english', title || ' ' || performer) @@ to_tsquery('english', $1)";
-      values.push(title);
+      query += " AND title ILIKE $1";
+      values.push(`%${title}%`);
     }
 
     if (performer && title) {
-      query += " AND to_tsvector('english', title || ' ' || performer) @@ to_tsquery('english', $2)";
-      values.push(performer);
+      query += " AND performer ILIKE $2";
+      values.push(`%${performer}%`);
     } else if (performer && !title) {
-      query += " AND to_tsvector('english', title || ' ' || performer) @@ to_tsquery('english', $1)";
-      values.push(performer);
+      query += " AND performer ILIKE $1";
+      values.push(`%${performer}%`);
     }
 
+    console.log(query);
     const result = await this._pool.query(query, values);
 
     return result.rows;
