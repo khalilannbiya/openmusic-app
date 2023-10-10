@@ -19,11 +19,11 @@ class SongsService {
       values: [id, title, year, performer, genre, duration, albumId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (!result.rows[0].id) throw new InvariantError("Song gagal ditambahkan!");
+    if (!rows[0].id) throw new InvariantError("Song gagal ditambahkan!");
 
-    return result.rows[0].id;
+    return rows[0].id;
   }
 
   async getSongs({ title, performer }) {
@@ -45,9 +45,9 @@ class SongsService {
       values.push(`%${performer}%`);
     }
 
-    const result = await this._pool.query(query, values);
+    const { rows } = await this._pool.query(query, values);
 
-    return result.rows;
+    return rows;
   }
 
   async getSongById(id) {
@@ -56,11 +56,11 @@ class SongsService {
       values: [id],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (!result.rows.length) throw new NotFoundError("Song tidak ditemukan!");
+    if (!rows.length) throw new NotFoundError("Song tidak ditemukan!");
 
-    return mapDBToModel(result.rows[0]);
+    return mapDBToModel(rows[0]);
   }
 
   async editSongById(id, { title, year, genre, performer, duration = null, albumId = null }) {
@@ -69,9 +69,9 @@ class SongsService {
       values: [title, year, genre, performer, duration, albumId, id],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (!result.rows.length) throw new NotFoundError("Gagal memperbarui song. ID tidak ditemukan");
+    if (!rows.length) throw new NotFoundError("Gagal memperbarui song. ID tidak ditemukan");
   }
 
   async deleteSongById(id) {
@@ -80,9 +80,9 @@ class SongsService {
       values: [id],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (!result.rows.length) throw new NotFoundError("Song gagal dihapus. ID tidak ditemukan");
+    if (!rows.length) throw new NotFoundError("Song gagal dihapus. ID tidak ditemukan");
   }
 }
 

@@ -19,11 +19,11 @@ class AlbumsService {
       values: [id, name, year],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (!result.rows[0].id) throw new InvariantError("Album gagal ditambahkan!");
+    if (!rows[0].id) throw new InvariantError("Album gagal ditambahkan!");
 
-    return result.rows[0].id;
+    return rows[0].id;
   }
 
   async getAlbumById(id) {
@@ -53,9 +53,9 @@ class AlbumsService {
       values: [name, year, id],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (!result.rows.length) throw new NotFoundError("Gagal memperbarui album. ID tidak ditemukan");
+    if (!rows.length) throw new NotFoundError("Gagal memperbarui album. ID tidak ditemukan");
   }
 
   async deleteAlbumById(id) {
@@ -64,9 +64,9 @@ class AlbumsService {
       values: [id],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (!result.rows.length) throw new NotFoundError("Album gagal dihapus. ID tidak ditemukan");
+    if (!rows.length) throw new NotFoundError("Album gagal dihapus. ID tidak ditemukan");
   }
 }
 
