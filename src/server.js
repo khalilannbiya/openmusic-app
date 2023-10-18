@@ -2,18 +2,24 @@ import dotenv from "dotenv";
 
 import Hapi from "@hapi/hapi";
 
-import albums from "./api/albums/index.js";
 import songs from "./api/songs/index.js";
-import AlbumsService from "./services/postgres/AlbumsService.js";
 import SongsService from "./services/postgres/SongsService.js";
-import AlbumsValidator from "./validator/albums/index.js";
 import SongsValidator from "./validator/songs/index.js";
+
+import albums from "./api/albums/index.js";
+import AlbumsService from "./services/postgres/AlbumsService.js";
+import AlbumsValidator from "./validator/albums/index.js";
+
+import users from "./api/users/index.js";
+import UsersService from "./services/postgres/UsersService.js";
+import UsersValidator from "./validator/users/index.js";
 
 dotenv.config();
 
 const init = async () => {
   const albumsService = new AlbumsService();
   const songsService = new SongsService();
+  const usersService = new UsersService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -38,6 +44,13 @@ const init = async () => {
       options: {
         service: songsService,
         validator: SongsValidator,
+      },
+    },
+    {
+      plugin: users,
+      options: {
+        service: usersService,
+        validator: UsersValidator,
       },
     },
   ]);
