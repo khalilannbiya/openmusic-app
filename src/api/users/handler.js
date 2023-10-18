@@ -17,7 +17,6 @@ class UsersHandler {
 
       const response = h.response({
         status: "success",
-        message: "User berhasil ditambahkan",
         data: {
           userId,
         },
