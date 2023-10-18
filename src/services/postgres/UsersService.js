@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import bcrypt from "bcrypt";
 
 import InvariantError from "../../exceptions/InvariantError.js";
+import AuthenticationError from "../../exceptions/AuthenticationError.js";
 
 const { Pool } = pkg;
 
@@ -41,6 +42,25 @@ class UsersService {
     const { rows } = await this._pool.query(query);
 
     if (rows.length > 0) throw new InvariantError("Gagal menambahkan user. Username sudah digunakan");
+  }
+
+  async verifyUserCredential(username, password) {
+    const query = {
+      text: "SELECT id, password FROM users WHERE username = $1",
+      values: [username],
+    };
+
+    const { rows } = await this._pool.query(query);
+
+    if (!rows.length) throw new AuthenticationError("Kredensial yang Anda berikan salah");
+
+    const { id, password: hashedPassword } = rows[0];
+
+    const match = await bcrypt.compare(password, hashedPassword);
+
+    if (!match) throw new AuthenticationError("Kredensial yang Anda berikan salah");
+
+    return id;
   }
 
   // async getUserById(userId) {
