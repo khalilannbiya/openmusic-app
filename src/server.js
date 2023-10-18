@@ -20,6 +20,10 @@ import AuthenticationsService from "./services/postgres/AuthenticationsService.j
 import TokenManager from "./tokenize/TokenManager.js";
 import AuthenticationsValidator from "./validator/authentications/index.js";
 
+import playlists from "./api/playlists/index.js";
+import PlaylistsValidator from "./validator/playlists/index.js";
+import PlaylistsService from "./services/postgres/PlaylistsService.js";
+
 dotenv.config();
 
 const init = async () => {
@@ -27,6 +31,7 @@ const init = async () => {
   const songsService = new SongsService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
+  const playlistsService = new PlaylistsService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -90,6 +95,13 @@ const init = async () => {
         usersService,
         tokenManager: TokenManager,
         validator: AuthenticationsValidator,
+      },
+    },
+    {
+      plugin: playlists,
+      options: {
+        service: playlistsService,
+        validator: PlaylistsValidator,
       },
     },
   ]);
