@@ -1,6 +1,7 @@
 import pkg from "pg";
 import { nanoid } from "nanoid";
 import InvariantError from "../../exceptions/InvariantError.js";
+import NotFoundError from "../../exceptions/NotFoundError.js";
 
 const { Pool } = pkg;
 
@@ -31,6 +32,17 @@ class PlaylistsService {
     };
     const { rows } = await this._pool.query(query);
     return rows;
+  }
+
+  async deletePlaylistById(id) {
+    const query = {
+      text: "DELETE FROM playlists WHERE id = $1 RETURNING id",
+      values: [id],
+    };
+
+    const { rows } = await this._pool.query(query);
+
+    if (!rows.length) throw new NotFoundError("Playlist gagal dihapus. Id tidak ditemukan");
   }
 
   // TODO: aktifkan ketika ingin digunakan untuk verifikasi owner
