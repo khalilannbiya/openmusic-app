@@ -1,5 +1,5 @@
 import InvariantError from "../../exceptions/InvariantError.js";
-import { PostPlaylistsPayloadSchema, PostAddSongPayloadSchema } from "./schema.js";
+import { PostPlaylistsPayloadSchema, PostAddSongToPlaylistPayloadSchema } from "./schema.js";
 
 const PlaylistsValidator = {
   validatePostPlaylistsPayload: (payload) => {
@@ -7,8 +7,8 @@ const PlaylistsValidator = {
 
     if (validationResult.error) throw new InvariantError(validationResult.error.message);
   },
-  validatePostAddSongPayload: (payload) => {
-    const validationResult = PostAddSongPayloadSchema.validate(payload);
+  validatePostAddSongToPlaylistPayload: (payload) => {
+    const validationResult = PostAddSongToPlaylistPayloadSchema.validate(payload);
 
     if (validationResult.error) throw new InvariantError(validationResult.error.message);
   },

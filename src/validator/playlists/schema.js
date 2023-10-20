@@ -4,6 +4,6 @@ export const PostPlaylistsPayloadSchema = Joi.object({
   name: Joi.string().required(),
 });
 
-export const PostAddSongPayloadSchema = Joi.object({
+export const PostAddSongToPlaylistPayloadSchema = Joi.object({
   songId: Joi.string().required(),
 });

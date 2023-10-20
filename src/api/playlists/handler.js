@@ -2,9 +2,10 @@ import autoBind from "auto-bind";
 import ClientError from "../../exceptions/ClientError.js";
 
 class PlaylistsHandler {
-  constructor(service, validator) {
+  constructor(service, validator, songsService) {
     this._service = service;
     this._validator = validator;
+    this._songsService = songsService;
 
     autoBind(this);
   }
@@ -88,6 +89,45 @@ class PlaylistsHandler {
         status: "success",
         message: "Playlist berhasil dihapus",
       };
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: "fail",
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: "error",
+        message: "Maaf, terjadi kegagalan pada server kami.",
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
+
+  async postSongToPlaylistHandler(request, h) {
+    try {
+      this._validator.validatePostAddSongToPlaylistPayload(request.payload);
+      const { id: playlistId } = request.params;
+
+      const { songId } = request.payload;
+
+      // TODO: verifikasi songId terdaftar atau tidak di table songs
+      await this._songsService.verifySongIdValid(songId);
+
+      await this._service.addSongToPlaylist(playlistId, songId);
+
+      const response = h.response({
+        status: "success",
+        message: "Song berhasil ditambahkan",
+      });
+      response.code(201);
+      return response;
     } catch (error) {
       if (error instanceof ClientError) {
         const response = h.response({

@@ -45,6 +45,19 @@ class PlaylistsService {
     if (!rows.length) throw new NotFoundError("Playlist gagal dihapus. Id tidak ditemukan");
   }
 
+  async addSongToPlaylist(playlistId, songId) {
+    const id = nanoid(16);
+
+    const query = {
+      text: "INSERT INTO playlist_songs VALUES($1, $2, $3) RETURNING id",
+      values: [id, playlistId, songId],
+    };
+
+    const { rows } = await this._pool.query(query);
+
+    if (!rows[0].id) throw new InvariantError("Song gagal ditambahkan!");
+  }
+
   // TODO: aktifkan ketika ingin digunakan untuk verifikasi owner
   // async verifyPlaylistOwner(id, owner) {
   //   const query = {
