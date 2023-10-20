@@ -58,6 +58,27 @@ class PlaylistsService {
     if (!rows[0].id) throw new InvariantError("Song gagal ditambahkan!");
   }
 
+  async getSongsOnPlaylist(id) {
+    const queryPlaylist = {
+      text: "SELECT playlists.id, playlists.name, users.username FROM playlists INNER JOIN users ON playlists.owner = users.id WHERE playlists.id = $1",
+      values: [id],
+    };
+
+    const querySongs = {
+      text: "SELECT songs.id, songs.title, songs.performer FROM songs INNER JOIN playlist_songs ON songs.id = playlist_songs.song_id WHERE playlist_songs.playlist_id = $1",
+      values: [id],
+    };
+
+    const [{ rows: songs }, { rows: playlist }] = await Promise.all([this._pool.query(querySongs), this._pool.query(queryPlaylist)]);
+
+    if (!playlist.length) throw new NotFoundError("Playlist tidak ditemukan!");
+
+    return {
+      ...playlist[0],
+      songs,
+    };
+  }
+
   // TODO: aktifkan ketika ingin digunakan untuk verifikasi owner
   // async verifyPlaylistOwner(id, owner) {
   //   const query = {

@@ -117,7 +117,6 @@ class PlaylistsHandler {
 
       const { songId } = request.payload;
 
-      // TODO: verifikasi songId terdaftar atau tidak di table songs
       await this._songsService.verifySongIdValid(songId);
 
       await this._service.addSongToPlaylist(playlistId, songId);
@@ -128,6 +127,38 @@ class PlaylistsHandler {
       });
       response.code(201);
       return response;
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: "fail",
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: "error",
+        message: "Maaf, terjadi kegagalan pada server kami.",
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
+
+  async getSongsOnPlaylistHandler(request, h) {
+    try {
+      const { id: playlistId } = request.params;
+      const playlist = await this._service.getSongsOnPlaylist(playlistId);
+
+      return {
+        status: "success",
+        data: {
+          playlist,
+        },
+      };
     } catch (error) {
       if (error instanceof ClientError) {
         const response = h.response({
