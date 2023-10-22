@@ -179,6 +179,40 @@ class PlaylistsHandler {
       return response;
     }
   }
+
+  async deleteSongOnPlaylistHandler(request, h) {
+    try {
+      const { id: playlistId } = request.params;
+      const { songId } = request.payload;
+
+      await this._songsService.verifySongIdValid(songId);
+
+      await this._service.deleteSongOnPlaylistById(playlistId, songId);
+
+      return {
+        status: "success",
+        message: "Song berhasil dihapus",
+      };
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: "fail",
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: "error",
+        message: "Maaf, terjadi kegagalan pada server kami.",
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
 }
 
 export default PlaylistsHandler;

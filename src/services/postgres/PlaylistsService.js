@@ -79,6 +79,18 @@ class PlaylistsService {
     };
   }
 
+  async deleteSongOnPlaylistById(playlistId, songId) {
+    const query = {
+      text: "DELETE FROM playlist_songs WHERE playlist_id = $1 AND song_id = $2 RETURNING id ",
+      values: [playlistId, songId],
+    };
+
+    const { rows } = await this._pool.query(query);
+    console.log(rows);
+
+    if (!rows.length) throw new NotFoundError("Song gagal dihapus. Id tidak ditemukan");
+  }
+
   // TODO: aktifkan ketika ingin digunakan untuk verifikasi owner
   // async verifyPlaylistOwner(id, owner) {
   //   const query = {
