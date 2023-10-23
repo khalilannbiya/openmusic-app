@@ -2,6 +2,7 @@ import pkg from "pg";
 import { nanoid } from "nanoid";
 import InvariantError from "../../exceptions/InvariantError.js";
 import NotFoundError from "../../exceptions/NotFoundError.js";
+import AuthorizationError from "../../exceptions/AuthorizationError.js";
 
 const { Pool } = pkg;
 
@@ -86,24 +87,22 @@ class PlaylistsService {
     };
 
     const { rows } = await this._pool.query(query);
-    console.log(rows);
 
     if (!rows.length) throw new NotFoundError("Song gagal dihapus. Id tidak ditemukan");
   }
 
-  // TODO: aktifkan ketika ingin digunakan untuk verifikasi owner
-  // async verifyPlaylistOwner(id, owner) {
-  //   const query = {
-  //     text: "SELECT * FROM playlists WHERE id = $1",
-  //     values: [id],
-  //   };
+  async verifyPlaylistOwner(id, owner) {
+    const query = {
+      text: "SELECT * FROM playlists WHERE id = $1",
+      values: [id],
+    };
 
-  //   const { rows } = await this._pool.query(query);
-  //   if (!rows.length) throw new NotFoundError("Playlist tidak ditemukan");
+    const { rows } = await this._pool.query(query);
+    if (!rows.length) throw new NotFoundError("Playlist tidak ditemukan");
 
-  //   const playlist = rows[0];
-  //   if (playlist.owner !== owner) throw new AuthorizationError("Anda tidak berhak mengakses resource ini");
-  // }
+    const playlist = rows[0];
+    if (playlist.owner !== owner) throw new AuthorizationError("Anda tidak berhak mengakses resource ini");
+  }
 }
 
 export default PlaylistsService;
