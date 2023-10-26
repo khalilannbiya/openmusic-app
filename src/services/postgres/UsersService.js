@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 
 import InvariantError from "../../exceptions/InvariantError.js";
 import AuthenticationError from "../../exceptions/AuthenticationError.js";
+import NotFoundError from "../../exceptions/NotFoundError.js";
 
 const { Pool } = pkg;
 
@@ -63,18 +64,18 @@ class UsersService {
     return id;
   }
 
-  // async getUserById(userId) {
-  //   const query = {
-  //     text: "SELECT id, username, fullname FROM users WHERE id = $1",
-  //     values: [userId],
-  //   };
+  async getUserById(userId) {
+    const query = {
+      text: "SELECT id, username, fullname FROM users WHERE id = $1",
+      values: [userId],
+    };
 
-  //   const { rows } = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-  //   if (!rows.length) throw new NotFoundError("User tidak ditemukan");
+    if (!rows.length) throw new NotFoundError("User tidak ditemukan");
 
-  //   return rows[0];
-  // }
+    return rows[0];
+  }
 }
 
 export default UsersService;
