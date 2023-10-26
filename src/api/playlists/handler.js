@@ -2,10 +2,11 @@ import autoBind from "auto-bind";
 import ClientError from "../../exceptions/ClientError.js";
 
 class PlaylistsHandler {
-  constructor(service, validator, songsService) {
+  constructor(service, validator, songsService, playlistActivitiesService) {
     this._service = service;
     this._validator = validator;
     this._songsService = songsService;
+    this._playlistActivitiesService = playlistActivitiesService;
 
     autoBind(this);
   }
@@ -126,6 +127,8 @@ class PlaylistsHandler {
 
       await this._service.addSongToPlaylist(playlistId, songId);
 
+      await this._playlistActivitiesService.addPlaylistActivities(playlistId, songId, credentialId, "add");
+
       const response = h.response({
         status: "success",
         message: "Song berhasil ditambahkan",
@@ -201,9 +204,48 @@ class PlaylistsHandler {
 
       await this._service.deleteSongOnPlaylistById(playlistId, songId);
 
+      await this._playlistActivitiesService.addPlaylistActivities(playlistId, songId, credentialId, "delete");
+
       return {
         status: "success",
         message: "Song berhasil dihapus",
+      };
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: "fail",
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: "error",
+        message: "Maaf, terjadi kegagalan pada server kami.",
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
+
+  async getPlaylistActivitiesHandler(request, h) {
+    try {
+      const { id: playlistId } = request.params;
+      const { id: credentialId } = request.auth.credentials;
+
+      await this._service.verifyPlaylistAccess(playlistId, credentialId);
+
+      const activities = await this._playlistActivitiesService.getPlaylistActivites(playlistId);
+
+      return {
+        status: "success",
+        data: {
+          playlistId,
+          activities,
+        },
       };
     } catch (error) {
       if (error instanceof ClientError) {
