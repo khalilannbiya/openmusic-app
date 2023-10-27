@@ -1,6 +1,5 @@
 import autoBind from "auto-bind";
 import ClientError from "../../exceptions/ClientError.js";
-import { simpleResponseSong } from "../../utils/index.js";
 
 class SongsHandler {
   constructor(service, validator) {
@@ -50,7 +49,7 @@ class SongsHandler {
     return {
       status: "success",
       data: {
-        songs: songs.map(simpleResponseSong),
+        songs,
       },
     };
   }

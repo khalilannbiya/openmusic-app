@@ -2,7 +2,6 @@ import pkg from "pg";
 import { nanoid } from "nanoid";
 import InvariantError from "../../exceptions/InvariantError.js";
 import NotFoundError from "../../exceptions/NotFoundError.js";
-import { simpleResponseSong } from "../../utils/index.js";
 
 const { Pool } = pkg;
 
@@ -28,7 +27,7 @@ class AlbumsService {
 
   async getAlbumById(id) {
     const queryJoin = {
-      text: "SELECT * FROM albums JOIN songs ON albums.id = songs.album_id WHERE albums.id = $1",
+      text: "SELECT songs.id, songs.title, songs.performer FROM albums JOIN songs ON albums.id = songs.album_id WHERE albums.id = $1",
       values: [id],
     };
 
@@ -43,7 +42,7 @@ class AlbumsService {
 
     return {
       ...resultAlbum.rows[0],
-      songs: resultJoin.rows.map(simpleResponseSong),
+      songs: resultJoin.rows,
     };
   }
 

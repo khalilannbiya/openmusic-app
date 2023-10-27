@@ -27,8 +27,7 @@ class SongsService {
   }
 
   async getSongs({ title, performer }) {
-    // Membuat query SQL untuk pencarian Full Text
-    let query = "SELECT * FROM songs WHERE 1=1";
+    let query = "SELECT id, title, performer FROM songs WHERE 1=1";
 
     const values = [];
 

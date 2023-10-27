@@ -1,6 +1,6 @@
 import Joi from "joi";
 
 export const CollaborationPayloadSchema = Joi.object({
-  playlistId: Joi.string().required(),
-  userId: Joi.string().required(),
+  playlistId: Joi.string().max(50).required(),
+  userId: Joi.string().max(50).required(),
 });

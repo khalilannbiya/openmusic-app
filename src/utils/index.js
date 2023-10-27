@@ -7,9 +7,3 @@ export const mapDBToModel = ({ id, title, year, performer, genre, duration, albu
   duration,
   albumId: album_id,
 });
-
-export const simpleResponseSong = ({ id, title, performer }) => ({
-  id,
-  title,
-  performer,
-});
