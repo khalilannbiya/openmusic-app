@@ -1,5 +1,6 @@
 import pkg from "pg";
 import { nanoid } from "nanoid";
+import { mapDBToModelAlbums } from "../../utils/index.js";
 import InvariantError from "../../exceptions/InvariantError.js";
 import NotFoundError from "../../exceptions/NotFoundError.js";
 
@@ -32,17 +33,17 @@ class AlbumsService {
     };
 
     const queryAlbum = {
-      text: "SELECT * FROM albums WHERE id = $1",
+      text: "SELECT id, name, cover_url FROM albums WHERE id = $1",
       values: [id],
     };
 
-    const [resultJoin, resultAlbum] = await Promise.all([this._pool.query(queryJoin), this._pool.query(queryAlbum)]);
+    const [{ rows: resultJoin }, { rows: resultAlbum }] = await Promise.all([this._pool.query(queryJoin), this._pool.query(queryAlbum)]);
 
-    if (!resultAlbum.rows.length) throw new NotFoundError("Album tidak ditemukan!");
+    if (!resultAlbum.length) throw new NotFoundError("Album tidak ditemukan!");
 
     return {
-      ...resultAlbum.rows[0],
-      songs: resultJoin.rows,
+      ...mapDBToModelAlbums(resultAlbum[0]),
+      songs: resultJoin,
     };
   }
 
@@ -66,6 +67,17 @@ class AlbumsService {
     const { rows } = await this._pool.query(query);
 
     if (!rows.length) throw new NotFoundError("Album gagal dihapus. ID tidak ditemukan");
+  }
+
+  async addCoverAlbumById(albumId, filename) {
+    const query = {
+      text: "UPDATE albums SET cover_url = $1 WHERE id = $2 RETURNING id",
+      values: [filename, albumId],
+    };
+
+    const { rows } = await this._pool.query(query);
+
+    if (!rows[0].id) throw new InvariantError("Cover album gagal diunggah!");
   }
 }
 
