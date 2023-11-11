@@ -2,6 +2,11 @@ import dotenv from "dotenv";
 
 import Hapi from "@hapi/hapi";
 import Jwt from "@hapi/jwt";
+import path from "path";
+import Inert from "@hapi/inert";
+
+// for fixing the issue of __dirname being undefined
+import { fileURLToPath } from "url";
 
 import songs from "./api/songs/index.js";
 import SongsService from "./services/postgres/SongsService.js";
@@ -34,9 +39,17 @@ import _exports from "./api/exports/index.js";
 import ProducerService from "./services/rabbitmq/ProducerService.js";
 import ExportsValidator from "./validator/exports/index.js";
 
+import uploads from "./api/uploads/index.js";
+import StorageService from "./services/storage/StorageService.js";
+import UploadsValidator from "./validator/uploads/index.js";
+
 dotenv.config();
 
 const init = async () => {
+  // for fixing the issue of __dirname being undefined
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
   const albumsService = new AlbumsService();
   const songsService = new SongsService();
   const usersService = new UsersService();
@@ -44,6 +57,7 @@ const init = async () => {
   const collaborationsService = new CollaborationsService();
   const playlistsService = new PlaylistsService(collaborationsService);
   const playlistActivitiesService = new PlaylistActivitiesService();
+  const storageService = new StorageService(path.resolve(__dirname, "assets/images/album"));
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -58,6 +72,9 @@ const init = async () => {
   await server.register([
     {
       plugin: Jwt,
+    },
+    {
+      plugin: Inert,
     },
   ]);
 
@@ -133,6 +150,14 @@ const init = async () => {
         service: ProducerService,
         validator: ExportsValidator,
         playlistsService,
+      },
+    },
+    {
+      plugin: uploads,
+      options: {
+        service: storageService,
+        validator: UploadsValidator,
+        albumsService,
       },
     },
   ]);
