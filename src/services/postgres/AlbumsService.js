@@ -79,6 +79,52 @@ class AlbumsService {
 
     if (!rows[0].id) throw new InvariantError("Cover album gagal diunggah!");
   }
+
+  async addLikeAlbum(userId, albumId) {
+    const id = nanoid(16);
+
+    const queryVerifyUserLikedAlbum = {
+      text: "SELECT id FROM user_album_likes WHERE user_id = $1 AND album_id = $2",
+      values: [userId, albumId],
+    };
+
+    const queryAddLikeToAlbum = {
+      text: "INSERT INTO user_album_likes VALUES($1, $2, $3) RETURNING id",
+      values: [id, userId, albumId],
+    };
+
+    const { rows: resultQueryVerifyLikedAlbum } = await this._pool.query(queryVerifyUserLikedAlbum);
+
+    if (resultQueryVerifyLikedAlbum[0]) throw new InvariantError("Gagal menyukai, album telah disukai sebelumnya");
+
+    const { rows: resultQueryAddLikeToAlbum } = await this._pool.query(queryAddLikeToAlbum);
+
+    if (!resultQueryAddLikeToAlbum[0]) throw new InvariantError("Gagal menyukai album!");
+  }
+
+  async deleteLikeAlbum(userId, albumId) {
+    const query = {
+      text: "DELETE FROM user_album_likes WHERE user_id = $1 AND album_id = $2 RETURNING id",
+      values: [userId, albumId],
+    };
+
+    const { rows } = await this._pool.query(query);
+
+    if (!rows[0]) throw new InvariantError("Gagal batal menyukai album!");
+  }
+
+  async getLikeAlbum(albumId) {
+    const query = {
+      text: "SELECT COUNT(*) FROM user_album_likes WHERE album_id = $1",
+      values: [albumId],
+    };
+
+    const {
+      rows: [{ count }],
+    } = await this._pool.query(query);
+
+    return count;
+  }
 }
 
 export default AlbumsService;
