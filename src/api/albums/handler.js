@@ -138,6 +138,105 @@ class AlbumsHandler {
       return response;
     }
   }
+
+  async postLikeAlbumHandler(request, h) {
+    try {
+      const { id: credentialId } = request.auth.credentials;
+      const { id: albumId } = request.params;
+
+      await this._service.addLikeAlbum(credentialId, albumId);
+
+      const response = h.response({
+        status: "success",
+        message: "Berhasil menyukai album",
+      });
+      response.code(201);
+      return response;
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: "fail",
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server Error
+      const response = h.response({
+        status: "Error",
+        message: "Maaf, terjadi kegagalan pada server kami!",
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
+
+  async deleteLikeAlbumHandler(request, h) {
+    try {
+      const { id: credentialId } = request.auth.credentials;
+      const { id: albumId } = request.params;
+
+      await this._service.deleteLikeAlbum(credentialId, albumId);
+
+      return {
+        status: "success",
+        message: "Batal menyukai album!",
+      };
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: "fail",
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server Error
+      const response = h.response({
+        status: "Error",
+        message: "Maaf, terjadi kegagalan pada server kami!",
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
+
+  async getLikeAlbumHandler(request, h) {
+    try {
+      const { id: albumId } = request.params;
+
+      const likes = await this._service.getLikeAlbum(albumId);
+
+      return {
+        status: "success",
+        data: {
+          likes,
+        },
+      };
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: "fail",
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server Error
+      const response = h.response({
+        status: "Error",
+        message: "Maaf, terjadi kegagalan pada server kami!",
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
 }
 
 export default AlbumsHandler;
