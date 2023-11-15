@@ -43,6 +43,8 @@ import uploads from "./api/uploads/index.js";
 import StorageService from "./services/storage/StorageService.js";
 import UploadsValidator from "./validator/uploads/index.js";
 
+import CacheService from "./services/redis/CacheService.js";
+
 dotenv.config();
 
 const init = async () => {
@@ -50,7 +52,8 @@ const init = async () => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  const albumsService = new AlbumsService();
+  const cacheService = new CacheService();
+  const albumsService = new AlbumsService(cacheService);
   const songsService = new SongsService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
