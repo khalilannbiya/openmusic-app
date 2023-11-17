@@ -144,6 +144,9 @@ class AlbumsHandler {
       const { id: credentialId } = request.auth.credentials;
       const { id: albumId } = request.params;
 
+      // Verify if the album exists or not
+      await this._service.getAlbumById(albumId);
+
       await this._service.addLikeAlbum(credentialId, albumId);
 
       const response = h.response({
@@ -209,14 +212,17 @@ class AlbumsHandler {
     try {
       const { id: albumId } = request.params;
 
-      const likes = await this._service.getLikeAlbum(albumId);
+      const { count: likes, source } = await this._service.getLikeAlbum(albumId);
 
-      return {
+      const response = h.response({
         status: "success",
         data: {
-          likes,
+          likes: Number(likes),
         },
-      };
+      });
+      response.code(200);
+      response.header("X-Data-Source", source);
+      return response;
     } catch (error) {
       if (error instanceof ClientError) {
         const response = h.response({

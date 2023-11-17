@@ -7,8 +7,9 @@ import NotFoundError from "../../exceptions/NotFoundError.js";
 const { Pool } = pkg;
 
 class AlbumsService {
-  constructor() {
+  constructor(cacheService) {
     this._pool = new Pool();
+    this._cacheService = cacheService;
   }
 
   async addAlbum({ name, year }) {
@@ -33,7 +34,7 @@ class AlbumsService {
     };
 
     const queryAlbum = {
-      text: "SELECT id, name, cover_url FROM albums WHERE id = $1",
+      text: "SELECT id, name, year, cover_url FROM albums WHERE id = $1",
       values: [id],
     };
 
@@ -77,7 +78,7 @@ class AlbumsService {
 
     const { rows } = await this._pool.query(query);
 
-    if (!rows[0].id) throw new InvariantError("Cover album gagal diunggah!");
+    if (!rows[0]) throw new InvariantError("Cover album gagal diunggah!");
   }
 
   async addLikeAlbum(userId, albumId) {
@@ -100,6 +101,8 @@ class AlbumsService {
     const { rows: resultQueryAddLikeToAlbum } = await this._pool.query(queryAddLikeToAlbum);
 
     if (!resultQueryAddLikeToAlbum[0]) throw new InvariantError("Gagal menyukai album!");
+
+    await this._cacheService.delete(`likes:${albumId}`);
   }
 
   async deleteLikeAlbum(userId, albumId) {
@@ -111,19 +114,34 @@ class AlbumsService {
     const { rows } = await this._pool.query(query);
 
     if (!rows[0]) throw new InvariantError("Gagal batal menyukai album!");
+
+    await this._cacheService.delete(`likes:${albumId}`);
   }
 
   async getLikeAlbum(albumId) {
-    const query = {
-      text: "SELECT COUNT(*) FROM user_album_likes WHERE album_id = $1",
-      values: [albumId],
-    };
+    try {
+      const result = await this._cacheService.get(`likes:${albumId}`);
+      return {
+        count: JSON.parse(result),
+        source: "cache",
+      };
+    } catch (error) {
+      const query = {
+        text: "SELECT COUNT(*) FROM user_album_likes WHERE album_id = $1",
+        values: [albumId],
+      };
 
-    const {
-      rows: [{ count }],
-    } = await this._pool.query(query);
+      const {
+        rows: [{ count }],
+      } = await this._pool.query(query);
 
-    return count;
+      await this._cacheService.set(`likes:${albumId}`, JSON.stringify(count));
+
+      return {
+        count,
+        source: "database",
+      };
+    }
   }
 }
 
