@@ -212,7 +212,7 @@ class AlbumsHandler {
     try {
       const { id: albumId } = request.params;
 
-      const { count: likes, source } = await this._service.getLikeAlbum(albumId);
+      const { count: likes, isCache } = await this._service.getLikeAlbum(albumId);
 
       const response = h.response({
         status: "success",
@@ -221,7 +221,9 @@ class AlbumsHandler {
         },
       });
       response.code(200);
-      response.header("X-Data-Source", source);
+
+      if (isCache) response.header("X-Data-Source", "cache");
+
       return response;
     } catch (error) {
       if (error instanceof ClientError) {
