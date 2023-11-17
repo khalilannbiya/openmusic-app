@@ -22,7 +22,7 @@ const routes = (handler) => [
   },
   {
     method: "GET",
-    path: "/albums/cover/{param*}",
+    path: "/albums/{id}/covers/{param*}",
     handler: {
       directory: {
         path: path.resolve(__dirname, "../../assets/images/album"),
